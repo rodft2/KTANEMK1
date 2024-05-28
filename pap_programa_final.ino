@@ -16,13 +16,16 @@ char serialCode[10];
 
 void bombExploded();
 void addStrike();
-
+hd44780_I2Cexp seriallcd(0x26);
 // function that generates the serial number for Simon Says
 void generateSerialCode() 
 {
   char alphanumeric[50] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
   for ( int i = 0; i < 7; i++)
     serialCode[i] = alphanumeric[random(0, 35)];
+    seriallcd.begin(16,2);
+    seriallcd.print("serial:");
+    seriallcd.print(serialCode);
 }
 
 // function that adds a strike
@@ -591,7 +594,7 @@ void memoryModuleBoom()
 
 void memoryLoop()
 {
-  if (!memoryModuleDefused)
+  if (!memoryModuleDefused)seriallcd.print(serialCode);
     memoryCheckButton();
 
 }
@@ -877,7 +880,7 @@ void whoLoop()
 
 #define PIN_CLK 14
 #define PIN_DIO 15
-hd44780_I2Cexp timer(0x26);
+hd44780_I2Cexp timer(0x20);
 unsigned long seconds = 0;
 int mins = TIMER_MINUTES, sec = TIMER_SECONDS + 1;
 int secb;
@@ -1037,9 +1040,6 @@ void printModuleDefused()
   lcdButton.clear();
   lcdButton.setCursor(1, 0);
   lcdButton.print("MODULE DEFUSED");
-  lcdButton.setCursor(0, 1);
-  lcdButton.print("Serial: ");
-  lcdButton.print(serialCode);
 }
 
 void buttonSetup()
@@ -1759,8 +1759,8 @@ void loop() {
   if (!defused && !exploded)
   {
     whoLoop();
-//    memoryLoop();
-//    buttonLoop();
+   memoryLoop();
+    buttonLoop();
   }
 
 
